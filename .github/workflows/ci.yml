@@ -1,0 +1,160 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: py${{ matrix.python }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: 自检（基线必须绿）
+        run: python -m unittest discover -s tests -v
+
+      # ------------------------------------------------------------------
+      # 负控：守卫必须自证会红。
+      # 每一发都是「注入已知破坏 → 必须红 → 还原 → 核 sha256」。
+      # 任何一发变绿，构建失败。
+      # ------------------------------------------------------------------
+
+      - name: 负控 1 — 挖掉「空态」，G006 必须响
+        shell: bash
+        run: |
+          set -u
+          F=fixtures/good_design.md
+          B=$(sha256sum "$F" | cut -d' ' -f1)
+          cp "$F" "$RUNNER_TEMP/g.bak"
+          sed -i 's/空态/某态/g' "$F"
+          set +e
+          python tools/design_check.py "$F" > "$RUNNER_TEMP/out.txt" 2>&1
+          RC=$?
+          set -e
+          cp "$RUNNER_TEMP/g.bak" "$F"
+          A=$(sha256sum "$F" | cut -d' ' -f1)
+          [ "$B" = "$A" ] || { echo "::error::负控 1 还原失败"; exit 1; }
+          if [ "$RC" -ne 1 ]; then
+            echo "::error::负控 1 期望 rc=1，实际 rc=$RC —— G006 是死的"
+            cat "$RUNNER_TEMP/out.txt"
+            exit 1
+          fi
+          grep -q 'G006' "$RUNNER_TEMP/out.txt" || {
+            echo "::error::负控 1 红了但不是因为 G006"; cat "$RUNNER_TEMP/out.txt"; exit 1; }
+          echo "负控 1 OK：G006 响，rc=1，还原 sha256 一致"
+
+      - name: 负控 2 — 对象不对必须是 2，不是 0 也不是 1
+        shell: bash
+        run: |
+          set -u
+          cat > "$RUNNER_TEMP/research.md" <<'EOF'
+          # 某方向调研
+
+          ## 竞品形态
+
+          NOBOOK / 希沃 的共同形态：逼真实验 + 老师演示。
+
+          ## 排期
+
+          | 阶段 | 交付 |
+          |---|---|
+          | v0.2 | 任务卡 12 张 |
+          EOF
+          set +e
+          python tools/design_check.py "$RUNNER_TEMP/research.md" > "$RUNNER_TEMP/o.txt" 2>&1
+          RC=$?
+          set -e
+          if [ "$RC" -ne 2 ]; then
+            echo "::error::负控 2 期望 rc=2，实际 rc=$RC —— 不适用的对象被读成了判决"
+            cat "$RUNNER_TEMP/o.txt"
+            exit 1
+          fi
+          echo "负控 2 OK：rc=2"
+
+      - name: 负控 3 — 样式文件不给 --kind 必须是 2
+        shell: bash
+        run: |
+          set -u
+          set +e
+          python tools/design_check.py fixtures/ai_tell.css > "$RUNNER_TEMP/o3.txt" 2>&1
+          RC=$?
+          set -e
+          if [ "$RC" -ne 2 ]; then
+            echo "::error::负控 3 期望 rc=2，实际 rc=$RC —— 适用域有默认值了"
+            cat "$RUNNER_TEMP/o3.txt"
+            exit 1
+          fi
+          echo "负控 3 OK：rc=2"
+
+      - name: 负控 4 — 挖掉案例的一节，仓库自检必须红
+        shell: bash
+        run: |
+          set -u
+          F=cases/03-same-code-two-verdicts.md
+          B=$(sha256sum "$F" | cut -d' ' -f1)
+          cp "$F" "$RUNNER_TEMP/c.bak"
+          sed -i 's/^## 取证$/## 取证材料/' "$F"
+          set +e
+          python -m unittest discover -s tests > /dev/null 2>&1
+          RC=$?
+          set -e
+          cp "$RUNNER_TEMP/c.bak" "$F"
+          A=$(sha256sum "$F" | cut -d' ' -f1)
+          [ "$B" = "$A" ] || { echo "::error::负控 4 还原失败"; exit 1; }
+          if [ "$RC" -eq 0 ]; then
+            echo "::error::负控 4 没有变红 —— 案例结构守卫是假绿"
+            exit 1
+          fi
+          echo "负控 4 OK：仓库自检红"
+
+      - name: 负控 5 — 塞一个脱敏黑名单里的词，必须红
+        shell: bash
+        run: |
+          set -u
+          python - <<'PY'
+          import re
+          src = open("tests/test_repo.py", encoding="utf-8").read()
+          word = re.search(r"BANNED = \[(.*?)\]", src, re.S).group(1).split(",")[0]
+          word = word.strip().strip('"')
+          assert word, "取不到禁用词，负控无法注入"
+          with open("cases/01-five-false-positives.md", "a", encoding="utf-8") as fh:
+              fh.write("\n补充：" + word + " 的客户稿。\n")
+          print("injected len =", len(word))
+          PY
+          set +e
+          python -m unittest discover -s tests > /dev/null 2>&1
+          RC=$?
+          set -e
+          git checkout -- cases/01-five-false-positives.md
+          if [ "$RC" -eq 0 ]; then
+            echo "::error::负控 5 没有变红 —— 脱敏守卫是假绿"
+            exit 1
+          fi
+          echo "负控 5 OK"
+
+      - name: 还原后基线必须重新变绿
+        run: python -m unittest discover -s tests
+
+      - name: 还原后工作区必须干净
+        shell: bash
+        run: |
+          set -u
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::负控还原后工作区不干净："
+            git status --porcelain
+            exit 1
+          fi
+          echo "工作区干净"

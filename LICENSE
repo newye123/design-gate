@@ -1,0 +1,79 @@
+# 非商业使用许可 1.0（NC-1.0）
+
+**Non-Commercial Use License 1.0**
+
+著作权所有 © 2026 yt (GitHub: [@newye123](https://github.com/newye123))。保留所有权利。
+Copyright © 2026 yt (GitHub: [@newye123](https://github.com/newye123)). All rights reserved.
+
+---
+
+## 一、定义
+
+- **本作品**：本仓库中的全部内容，包括但不限于 `SKILL.md`、`cases/`、`fixtures/`、`tests/`、`README.md`、`tools/` 下的代码、文档、提示词与示例。
+- **商业使用**：以直接或间接获取经济利益为目的的使用。包括但不限于：
+  - 销售、出租、许可、订阅收费；
+  - 用于付费产品或付费服务（含 SaaS、付费课程、付费社群、付费咨询与交付）；
+  - 用于企业内部以营利为目的的生产经营流程；
+  - 用于投放广告、引流变现或以本作品为主要卖点的内容产品；
+  - 将其整体或实质部分并入商业软件、商业 Agent 产品、商业技能市场中的付费技能。
+- **非商业使用**：不以获取经济利益为目的的个人学习、研究、教学、评测、内部试验。
+
+## 二、授权（仅限非商业）
+
+在遵守本许可全部条款的前提下，你可以：
+
+1. **使用**：为非商业目的运行、演示、试用本作品。
+2. **复制与分发**：为非商业目的复制、转载、分发本作品，但必须**完整保留**本许可文件与下述版权声明。
+3. **修改**：为非商业目的修改本作品，但必须：
+   - 在显著位置注明「基于 yt 的 design-gate 修改」并附原始仓库链接；
+   - 修改后的作品同样受本许可约束（相同方式共享）。
+4. **教学引用**：在课堂、内部分享、公开演讲中引用，需注明作者与出处链接。
+
+## 三、禁止
+
+1. **禁止任何形式的商业使用**，无论是否收费、是否直接获利。
+2. **禁止销售**本作品或其衍生作品，包括在技能市场、应用市场、课程平台、知识付费平台上架收费版本。
+3. **禁止移除或篡改**版权声明、作者署名、许可文件与仓库出处链接。
+4. **禁止**将本作品整体或实质部分申请为商标、专利、软件著作权等排他性权利。
+5. **禁止**以本作品为基础训练、微调、蒸馏商业模型或商业 Agent 产品。
+
+## 四、商业授权
+
+如需商业使用，**必须事先取得著作权人的书面授权**。
+
+授权方式：通过 GitHub Issue 或仓库 README 中列明的联系方式提出申请，说明使用场景、范围与期限。未取得书面授权的一切商业使用均属侵权。
+
+## 五、免责声明
+
+本作品按「现状」提供，不附带任何明示或默示的担保，包括但不限于适销性、特定用途适用性与不侵权的担保。因使用本作品而产生的任何直接或间接损失，作者不承担责任。
+
+本作品是方法论与工程实践记录，**不构成法律、财务、安全或合规建议**。
+
+**关于「反 AI 味」四条铁律：它们是启发式，不是研究结论。** 没有对照实验支撑，也没有任何关于「什么算 AI 做的」的权威定义。工具的输出是待核清单，不是判决书；任何据此作出的设计决策，责任在使用者。
+
+## 六、终止
+
+违反本许可任一条款，授权自动终止，你须立即停止使用并删除全部副本。
+
+## 七、其他
+
+- 本许可不授予商标权、肖像权及第三方内容的权利。
+- 本许可的简体中文版本为权威版本；英文译文仅供参考。
+
+---
+
+## English Summary (for reference only — the Chinese text above is authoritative)
+
+You may use, copy, distribute, and modify this work **for non-commercial purposes only**, provided you keep this license and the copyright notice intact, credit the original author with a link back to this repository, and license any derivative under the same terms.
+
+**Commercial use of any kind is prohibited** without prior written permission from the copyright holder. This includes selling it, bundling it into a paid product or service, using it in for-profit business operations, or using it to train commercial models.
+
+The work is provided "as is", without warranty of any kind. It is a record of engineering practice, not legal, financial, security, or compliance advice.
+
+---
+
+## 关于本许可的一个诚实说明
+
+- 这不是一份由律师起草的许可证。它是把「禁止商用 + 保留署名」写清楚的最短文本。如果你的场景需要更强的法律确定性，请咨询律师，或改用标准许可证 **PolyForm Noncommercial License 1.0.0**（专为非商业用途设计，国际通用）。
+- **本许可不能追溯撤销已发生的授权。** 本仓库自首次发布起即为 NC-1.0，没有以 MIT 或其他更宽松的许可发布过任何版本。若将来放宽许可，已取得旧版本副本的人对其副本仍适用当时的许可——反过来，若将来收紧，同理。
+- 本许可不是 OSI 认可的开源许可证。「开源」通常指允许商业使用；本作品是**源码公开（source-available）**，不是开源。这个区别请在使用与转述时保持准确。
